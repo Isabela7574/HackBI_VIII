@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SOS Grader</title>
+        <link rel="icon" href="../littleLogo.ico" type="image/x-icon">
+    <style>
+            /* General Styles */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #191919;
+                color: #B88746;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            .container {
+                background-color: #2d2d2d;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+                width: 300px;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            label {
+                display: block;
+                margin: 10px 0;
+                font-size: 14px;
+            }
+
+            input[type="file"] {
+                background-color: #B88746;
+                color: #191919;
+                padding: 8px;
+                font-size: 14px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 10px;
+            }
+
+            textarea {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+                border-radius: 5px;
+                border: 1px solid #B88746;
+                margin-bottom: 15px;
+                background-color: #333333;
+                color: #B88746;
+            }
+
+            button[type="button"] {
+                background-color: #B88746;
+                color: #191919;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                width: 100%;
+            }
+
+            button[type="button"]:hover {
+                background-color: #9e7c34;
+            }
+
+            img{
+                width:100%;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <img src = "../skinnyLogo.png">
+            
+
+            <!-- Form for uploading image and text -->
+            <form id="upload-form">
+                <label for="image-upload" class="file-label">Choose an Image:</label>
+                <input type="file" id="image-upload" name="image" accept="image/*" required><br>
+
+                <label for="user-text">Enter Text:</label>
+                <textarea id="user-text" name="text" rows="4" required placeholder="Write something..."></textarea><br>
+
+                <button type="button" id="submit-button">Submit</button>
+            </form>
+
+            <p id="result"></p>
+        </div>
+
+        <script>
+            document.getElementById('submit-button').addEventListener('click', async () => {
+                const form = document.getElementById('upload-form');
+                const formData = new FormData(form);
+                const fileInput = document.getElementById('image-upload');
+
+                if (fileInput.files.length === 0) {
+                    alert("Please select an image!");
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://127.0.0.1:8080/process-image', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Unknown server error');
+                    }
+
+                    const result = await response.json();
+                    alert(`Predicted Letter: ${result.predicted_letter}`); // Alert with the predicted letter
+                } catch (error) {
+                    console.error('Error:', error.message);
+                    alert(`Check Terminal For Predicted Letter`); // Alert with the error message
+                }
+            });
+        </script>
+    </body>
+</html>
